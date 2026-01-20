@@ -18,7 +18,7 @@ jobs:
       
       - name: Install dependencies
         run:
-          cd backend
+          cd backend &&
           go mod tidy
     
 
