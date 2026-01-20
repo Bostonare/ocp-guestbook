@@ -1,0 +1,50 @@
+name: test-coverage
+on:
+  push:
+    branches:
+      - main
+jobs: 
+  test-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.20'
+      
+      - name: Install dependencies
+        run:
+          cd backend
+          go mod tidy
+    
+
+      - name: run unit tests with coverage
+        run: |
+           cd backend
+           go test -v ./...
+
+
+      - name: generate coverage report
+        run: |
+            go test -coverprofile=coverage.out .
+      - name: check coverage
+        run: |
+          go tool cover -func=coverage.out | grep total | awk '{print $3}'
+          echo "total_coverage=$coverage" >> $GITHUB_OUTPUT
+          echo "Coverage: $coverage"
+          
+      - name: Fail if coverage is below threshold
+        run: |
+          coverage=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+          threshold=50.0
+          if (( $(echo "$coverage < $threshold" | bc -l) )); then
+            echo "Code coverage $coverage% is below the threshold of $threshold%"
+            exit 1
+          else
+            echo "Code coverage $coverage% meets the threshold of $threshold%"
+          fi    
+
