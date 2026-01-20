@@ -1,0 +1,11 @@
+FROM quay.io/kurs/redis:latest
+
+
+VOLUME [ "/var/lib/redis/data" ]
+
+RUN echo "dir /var/lib/redis/data" >> /etc/redis/redis.conf && \
+    echo "save 900 1" >> /etc/redis/redis.conf && \
+    echo "save 300 10" >> /etc/redis/redis.conf && \
+    echo "save 60 10000" >> /etc/redis/redis.conf
+
+EXPOSE 6379
