@@ -51,4 +51,36 @@ jobs:
           else
             echo "Code coverage $coverage% meets the threshold of $threshold%"
           fi    
+      
+  build_and_push:
+    runs-on: ubuntu-latest
+    needs: test-coverage
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        include:
+          - context:
+            image: backend
+          - context:
+            image: frontend
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
+      - name: log in to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        run: |
+          IMAGE_NAME=ghcr.io/${{ github.repository_owner}}/ocp-guestbook/${{ matrix.image }}:${{ github.sha }}
+          IMAGE_LATEST=ghcr.io/${{ github.repository_owner}}/ocp-guestbook/${{ matrix.image }}:latest
+          podman build -t $IMAGE_NAME -t $IMAGE_LATEST ./${{ matrix.context }}
+          podman push $IMAGE_NAME 
+          podman push $IMAGE_LATEST
