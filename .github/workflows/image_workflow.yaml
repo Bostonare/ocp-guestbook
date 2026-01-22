@@ -61,9 +61,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - context:
+          - context: backend
             image: backend
-          - context:
+          - context: frontend
             image: frontend
     
     steps:
