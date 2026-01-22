@@ -23,22 +23,25 @@ jobs:
     
 
       - name: run unit tests with coverage
-        run: |
-           cd backend
-           go test -v ./...
+        working-directory: ./backend  
+        run:
+         go test -v ./...
 
 
       - name: generate coverage report
+        working-directory: ./backend
         run: |
           go test -coverprofile=coverage.out .
 
       - name: check coverage
+        working-directory: ./backend
         run: |
           go tool cover -func=coverage.out | grep total | awk '{print $3}'
           echo "total_coverage=$coverage" >> $GITHUB_OUTPUT
           echo "Coverage: $coverage"
           
       - name: Fail if coverage is below threshold
+        working-directory: ./backend
         run: |
           coverage=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
           threshold=50.0
