@@ -30,7 +30,10 @@ jobs:
 
       - name: generate coverage report
         run: |
-            go test -coverprofile=coverage.out .
+          go mod init
+          
+          go test -coverprofile=coverage.out .
+
       - name: check coverage
         run: |
           go tool cover -func=coverage.out | grep total | awk '{print $3}'
