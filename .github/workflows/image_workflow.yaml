@@ -30,8 +30,6 @@ jobs:
 
       - name: generate coverage report
         run: |
-          go mod init
-          
           go test -coverprofile=coverage.out .
 
       - name: check coverage
