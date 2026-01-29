@@ -35,17 +35,52 @@ jobs:  # ← Ska vara här (samma nivå som on:)
         echo "tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
         echo "Generated tag: ${IMAGE_TAG}"
 
-    - name: Build and push image
+    - name: Build and push backend image
       uses: docker/build-push-action@v5
       with:
         context: .
-        file: ./Containerfile
+        file: ./backend/Containerfile
         push: true
         tags: |
           ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.image-tag.outputs.tag }}
           ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
         build-args: |
           APP_VERSION=${{ steps.image-tag.outputs.tag }}
+    - name: Build and push frontend image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./frontend/Containerfile
+        push: true
+        tags: |
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:${{ steps.image-tag.outputs.tag }}
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:latest
+        build-args: |
+          APP_VERSION=${{ steps.image-tag.outputs.tag }}
+    - name: Build and push postgres image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./postgres/Containerfile
+        push: true
+        tags: |
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}-postgres:${{ steps.image-tag.outputs.tag }}
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}-postgres:latest
+        build-args: |
+          APP_VERSION=${{ steps.image-tag.outputs.tag }}
+    - name: Build and push redis image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./redis/Containerfile
+        push: true
+        tags: |
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}-redis:${{ steps.image-tag.outputs.tag }}
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}-redis:latest
+        build-args: |
+          APP_VERSION=${{ steps.image-tag.outputs.tag }}
+    
+ 
 
     - name: Update Kubernetes manifests
       run: |
