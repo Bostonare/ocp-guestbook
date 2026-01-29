@@ -38,7 +38,7 @@ jobs:  # ← Ska vara här (samma nivå som on:)
     - name: Build and push backend image
       uses: docker/build-push-action@v5
       with:
-        context: .
+        context: ./backend
         file: ./backend/Containerfile
         push: true
         tags: |
@@ -46,42 +46,42 @@ jobs:  # ← Ska vara här (samma nivå som on:)
           ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
         build-args: |
           APP_VERSION=${{ steps.image-tag.outputs.tag }}
+
+
     - name: Build and push frontend image
       uses: docker/build-push-action@v5
       with:
-        context: .
+        context: ./frontend
         file: ./frontend/Containerfile
         push: true
         tags: |
-          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:${{ steps.image-tag.outputs.tag }}
-          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:latest
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.image-tag.outputs.tag }}
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
         build-args: |
           APP_VERSION=${{ steps.image-tag.outputs.tag }}
     - name: Build and push postgres image
       uses: docker/build-push-action@v5
       with:
-        context: .
+        context: ./postgres
         file: ./postgres/Containerfile
         push: true
         tags: |
-          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}-postgres:${{ steps.image-tag.outputs.tag }}
-          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}-postgres:latest
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.image-tag.outputs.tag }}
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
         build-args: |
           APP_VERSION=${{ steps.image-tag.outputs.tag }}
     - name: Build and push redis image
       uses: docker/build-push-action@v5
       with:
-        context: .
+        context: ./redis
         file: ./redis/Containerfile
         push: true
         tags: |
-          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}-redis:${{ steps.image-tag.outputs.tag }}
-          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}-redis:latest
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.image-tag.outputs.tag }}
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
         build-args: |
           APP_VERSION=${{ steps.image-tag.outputs.tag }}
     
- 
-
     - name: Update Kubernetes manifests
       run: |
         git config --global user.name "GitHub Actions"
