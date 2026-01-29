@@ -85,3 +85,6 @@ jobs:
           podman build -t $IMAGE_NAME -t $IMAGE_LATEST ./${{ matrix.context }}
           podman push $IMAGE_NAME 
           podman push $IMAGE_LATEST
+
+
+  
