@@ -96,8 +96,9 @@ jobs:  # ← Ska vara här (samma nivå som on:)
         cd config-repo
 
         for img in backend frontend postgres redis; do
-            sed -i "s|image: .*guestbook-$img:.*|image: ghcr.io/${{ env.IMAGE_NAMESPACE }}/guestbook-$img:${{ steps.image-tag.outputs.tag }}|" **/*.yaml
+            find . -name "*.yaml" -exec sed -i "s|image: .*ocp-guestbook-$img:.*|image: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/ocp-guestbook-$img:${{ steps.image-tag.outputs.tag }}|" {} +
         done
+
 
         if [[ -n "$(git status --porcelain)" ]]; then
           git add .
