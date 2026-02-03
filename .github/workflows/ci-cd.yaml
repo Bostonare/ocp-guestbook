@@ -10,8 +10,7 @@ on:
 env:  # ← Ska vara här (samma nivå som on:) ksdofjasc
   IMAGE_REGISTRY: ghcr.io
   IMAGE_NAMESPACE: bostonare
-  IMAGE_NAME: bostonare/guestbook-app
-  CONFIG_REPO: bostonare/openshift_config
+  CONFIG_REPO: bostonare/openshift-config
 
 jobs:  # ← Ska vara här (samma nivå som on:)
   build-and-push:
@@ -48,8 +47,8 @@ jobs:  # ← Ska vara här (samma nivå som on:)
         file: ./backend/Containerfile
         push: true
         tags: |
-          ${{ env.IMAGE_REGISTRY }}/bostonare/guestbook-backend:${{ steps.image-tag.outputs.tag }}
-          ${{ env.IMAGE_REGISTRY }}/bostonare/guestbook-backend:latest
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/guestbook-backend:${{ steps.image-tag.outputs.tag }}
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/guestbook-backend:latest
         build-args: |
           APP_VERSION=${{ steps.image-tag.outputs.tag }}
 
@@ -61,8 +60,8 @@ jobs:  # ← Ska vara här (samma nivå som on:)
         file: ./frontend/Containerfile
         push: true
         tags: |
-          ${{ env.IMAGE_REGISTRY }}/bostonare/guestbook-frontend:${{ steps.image-tag.outputs.tag }}
-          ${{ env.IMAGE_REGISTRY }}/bostonare/guestbook-frontend:latest
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/guestbook-frontend:${{ steps.image-tag.outputs.tag }}
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/guestbook-frontend:latest
         build-args: |
           APP_VERSION=${{ steps.image-tag.outputs.tag }}
     - name: Build and push postgres image
@@ -72,8 +71,8 @@ jobs:  # ← Ska vara här (samma nivå som on:)
         file: ./postgres/Containerfile
         push: true
         tags: |
-          ${{ env.IMAGE_REGISTRY }}/bostonare/guestbook-postgres:${{ steps.image-tag.outputs.tag }}
-          ${{ env.IMAGE_REGISTRY }}/bostonare/guestbook-postgres:latest
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/guestbook-postgres:${{ steps.image-tag.outputs.tag }}
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/guestbook-postgres:latest
         build-args: |
           APP_VERSION=${{ steps.image-tag.outputs.tag }}
     - name: Build and push redis image
@@ -83,8 +82,8 @@ jobs:  # ← Ska vara här (samma nivå som on:)
         file: ./redis/Containerfile
         push: true
         tags: |
-          ${{ env.IMAGE_REGISTRY }}/bostonare/guestbook-redis:${{ steps.image-tag.outputs.tag }}
-          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/guestbook-redis:${{ steps.image-tag.outputs.tag }}
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/guestbook-redis:latest
         build-args: |
           APP_VERSION=${{ steps.image-tag.outputs.tag }}
     
@@ -96,8 +95,9 @@ jobs:  # ← Ska vara här (samma nivå som on:)
         git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/bostonare/openshift-config.git config-repo
         cd config-repo
 
-        find . -name "*.yaml" -exec sed -i "s|image: .*guestbook-app:.*|image: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.image-tag.outputs.tag }}|" {} +
-        find . -name "*.yaml" -exec sed -i "s|value: \".*\"|value: \"${{ steps.image-tag.outputs.tag }}\"|" {} +
+        for img in backend frontend postgres redis; do
+            sed -i "s|image: .*guestbook-$img:.*|image: ghcr.io/${{ env.IMAGE_NAMESPACE }}/guestbook-$img:${{ steps.image-tag.outputs.tag }}|" **/*.yaml
+        done
 
         if [[ -n "$(git status --porcelain)" ]]; then
           git add .
