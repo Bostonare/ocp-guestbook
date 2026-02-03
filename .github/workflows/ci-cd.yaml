@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
 
-env:  # ← Ska vara här (samma nivå som on:) ksdofjas
+env:  # ← Ska vara här (samma nivå som on:) ksdofjasc
   IMAGE_REGISTRY: ghcr.io
   IMAGE_NAME: bostonare/guestbook-app
   CONFIG_REPO: bostonare/openshift_config
@@ -87,7 +87,7 @@ jobs:  # ← Ska vara här (samma nivå som on:)
         git config --global user.name "GitHub Actions"
         git config --global user.email "actions@github.com"
 
-        git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/bostonare/openshift_config.git config-repo
+        git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/bostonare/openshift-config.git config-repo
         cd config-repo
 
         find . -name "*.yaml" -exec sed -i "s|image: .*guestbook-app:.*|image: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.image-tag.outputs.tag }}|" {} +
