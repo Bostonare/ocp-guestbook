@@ -1,11 +1,15 @@
 name: CI/CD Pipeline
 
+permissions:
+    contents: write
+    packages: write
 on:
   push:
     branches: [ main ]
 
 env:  # ← Ska vara här (samma nivå som on:) ksdofjasc
   IMAGE_REGISTRY: ghcr.io
+  IMAGE_NAMESPACE: bostonare
   IMAGE_NAME: bostonare/guestbook-app
   CONFIG_REPO: bostonare/openshift_config
 
@@ -13,9 +17,7 @@ jobs:  # ← Ska vara här (samma nivå som on:)
   build-and-push:
     runs-on: ubuntu-latest
 
-    permissions:
-        contents: write
-        packages: write
+ 
 
     steps:
     - name: Checkout code
@@ -82,7 +84,7 @@ jobs:  # ← Ska vara här (samma nivå som on:)
         push: true
         tags: |
           ${{ env.IMAGE_REGISTRY }}/bostonare/guestbook-redis:${{ steps.image-tag.outputs.tag }}
-          ${{ env.IMAGE_REGISTRY }}/bostonare/guestbook-redis:latest
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
         build-args: |
           APP_VERSION=${{ steps.image-tag.outputs.tag }}
     
