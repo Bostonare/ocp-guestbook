@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
 
-env:  # ← Ska vara här (samma nivå som on:)
+env:  # ← Ska vara här (samma nivå som on:) ksdofjas
   IMAGE_REGISTRY: ghcr.io
   IMAGE_NAME: bostonare/guestbook-app
   CONFIG_REPO: bostonare/openshift_config
@@ -96,3 +96,5 @@ jobs:  # ← Ska vara här (samma nivå som on:)
         git add .
         git commit -m "Update image to ${{ steps.image-tag.outputs.tag }}"
         git push origin main
+        
+        
