@@ -47,8 +47,8 @@ jobs:  # ← Ska vara här (samma nivå som on:)
         file: ./backend/Containerfile
         push: true
         tags: |
-          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/guestbook-backend:${{ steps.image-tag.outputs.tag }}
-          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/guestbook-backend:latest
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/ocp-guestbook-backend:${{ steps.image-tag.outputs.tag }}
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/ocp-guestbook-backend:latest
         build-args: |
           APP_VERSION=${{ steps.image-tag.outputs.tag }}
 
@@ -60,8 +60,8 @@ jobs:  # ← Ska vara här (samma nivå som on:)
         file: ./frontend/Containerfile
         push: true
         tags: |
-          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/guestbook-frontend:${{ steps.image-tag.outputs.tag }}
-          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/guestbook-frontend:latest
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/ocp-guestbook-frontend:${{ steps.image-tag.outputs.tag }}
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/ocp-guestbook-frontend:latest
         build-args: |
           APP_VERSION=${{ steps.image-tag.outputs.tag }}
     - name: Build and push postgres image
