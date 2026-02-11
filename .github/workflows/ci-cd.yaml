@@ -88,12 +88,19 @@ jobs:  # ← Ska vara här (samma nivå som on:)
           APP_VERSION=${{ steps.image-tag.outputs.tag }}
     
     - name: Update Kubernetes manifests
+      env:
+        # Pass the secret into an environment variable for this step
+        MY_TOKEN: ${{ secrets.DEVOPS_3_GH_TOKEN }}
       run: |
         git config --global user.name "GitHub Actions"
         git config --global user.email "actions@github.com"
 
-        git clone https://x-access-token:${{ secrets.DEVOPS_3_GH_TOKEN }}@github.com/${{ env.CONFIG_REPO }}.git config-repo
+        # 1. Clone using a clean URL
+        git clone https://github.com/${{ env.CONFIG_REPO }}.git config-repo
         cd config-repo
+
+        # 2. Authenticate using the token in a header (Avoids URL/Port errors)
+        git config http.https://github.com/.extraheader "AUTHORIZATION: basic $(echo -n x-access-token:$MY_TOKEN | base64)"
 
         for img in backend frontend postgres redis; do
             find . -name "*.yaml" -exec sed -i "s|image: .*ocp-guestbook-$img:.*|image: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/ocp-guestbook-$img:${{ steps.image-tag.outputs.tag }}|" {} +
