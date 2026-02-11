@@ -109,4 +109,4 @@ jobs:  # ← Ska vara här (samma nivå som on:)
         fi
         
 
-#hej!
+#hej! Added PAT token to repo secrets.
